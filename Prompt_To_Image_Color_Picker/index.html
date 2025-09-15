@@ -1,0 +1,88 @@
+<!-- NEW MODIFIED CODE FOR COLOR PICKER-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator with Color Picker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#121212',
+                            card: '#1E1E1E',
+                            text: '#E0E0E0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+
+</head>
+<body class="bg-[#121212] dark:bg-dark-bg text-gray-800 dark:text-dark-text p-8 transition-colors duration-300">
+        <div class="container dark:bg-dark-card w-[60vw] mx-auto">
+        <h1 class="text-xl font-bold mb-4">Text Based AI Image Generator with Color Picker</h1>
+        <div class="input-group mt-6 text-black flex gap-2">
+            <input type="text" id="prompt" class="outline-none flex-1 p-2 rounded border" placeholder="Enter your text prompt to generate image">
+            <button id="generate-btn" class="bg-blue-500 text-white px-4 py-2 rounded">Generate</button>
+        </div>
+        <div class="result-container text-black mt-8 flex flex-col lg:flex-row gap-6">
+            <!-- Left side: Image & loading -->
+            <div class="flex-1">
+                <div id="loading" class="hidden mb-4">Generating image... Please wait...</div>
+                <div id="result">
+                    <img src="/images/nature3.png" alt="" class="max-w-full rounded shadow">
+                </div>
+            </div>
+            <!-- Right side: Color Picker -->
+            <div class="flex-1">
+                <div id="color-picker-section" class="hidden">
+                    <h2 class="text-lg font-semibold mb-2">Color Picker</h2>
+                    <p class="mb-2">Click on the image to select a color</p>
+                    <div id="color-display" class="flex items-center gap-4 mb-4">
+                        <div id="selected-color" class="w-10 h-10 rounded border"></div>
+                        <div id="color-value">RGB: </div>
+                    </div>
+                    <div id="color-schemes">
+                        <h3 class="font-semibold mb-2">Suggested Color Schemes</h3>
+                        <div class="schemes-container space-y-4">
+                            <div class="scheme" id="monochromatic">
+                                <h4>Monochromatic</h4>
+                                <div class="scheme-colors flex gap-2 mt-1"></div>
+                            </div>
+                            <div class="scheme !pt-0 !m-0" id="analogous">
+                                <h4>Analogous</h4>
+                                <div class="scheme-colors flex gap-2 mt-1"></div>
+                            </div>
+                            <div class="scheme" id="complementary">
+                                <h4>Complementary</h4>
+                                <div class="scheme-colors flex gap-2 mt-1"></div>
+                            </div>
+                            <div class="scheme" id="triadic">
+                                <h4>Triadic</h4>
+                                <div class="scheme-colors flex gap-2 mt-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+<!-- second section   -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
