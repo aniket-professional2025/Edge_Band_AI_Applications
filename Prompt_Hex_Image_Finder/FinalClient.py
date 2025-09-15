@@ -148,7 +148,16 @@ async def modified_laminate_agent(user_prompt: str):
             try:
                 color_info = json.loads(result)
                 hexcode = color_info.get("hexcode")
-                response_text = color_info.get("description", "Found matching color.")
+                description = color_info.get("description", "Found matching color.")
+
+                hexcode = hexcode.upper() if hexcode else None
+
+                response_text = f"""
+                    <div style="font-size:20px; margin-bottom:10px;">
+                    <b>Description:</b> {description}<br>
+                    <b>Hex Code:</b> <span style="color:green;">{hexcode}</span>
+                    </div>
+                """
             except json.JSONDecodeError:
                 st.error("Error: Invalid JSON from agent.")
                 return None
@@ -169,7 +178,7 @@ async def modified_laminate_agent(user_prompt: str):
 
         # Display response
         st.write("### **Laminate Agent Response**")
-        st.markdown(f"<div class='small-code-block'>{response_text}</div>", unsafe_allow_html=True)
+        st.markdown(response_text, unsafe_allow_html = True)
 
         if final_result and "matchedLaminates" in final_result:
             st.markdown("## **Matched Laminates:**")
