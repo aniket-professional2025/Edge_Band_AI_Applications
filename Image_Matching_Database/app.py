@@ -3,23 +3,23 @@ import streamlit as st
 from PIL import Image
 import os
 import tempfile
-from main import find_closest_match # This imports the function from your main.py file
+from main import find_closest_match 
 
 # Set up the Streamlit page configuration
-st.set_page_config(layout="wide", page_title="Image Match Finder")
+st.set_page_config(layout = "wide", page_title = "Image Match Finder")
 
 # Custom Header and description using Markdown for better styling
 st.markdown("""
-    <h1 style='text-align: center; color: #1f77b4;'>Image Match Finder</h1>
-    <p style='text-align: center; font-size: 1.2em; color: #555;'>
-        Upload an image and press 'Search' button to find the top two most similar images.
+    <h1 style='text-align: center; font-size: 3.5em; color: #1f77b4;'>Image Match Finder</h1>
+    <p style='text-align: center; font-size: 2em; color: #555;'>
+        Upload an image and press 'Search' button to find the top two most similar matches.
     </p>
     <hr style='border: 1px solid #ddd;'>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html = True)
 
 # Create the file uploader widget
 st.markdown("### Upload your image here...")
-uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("", type = ["jpg", "jpeg", "png"])
 
 # Main logic to process the uploaded file
 if uploaded_file is not None:
@@ -30,7 +30,7 @@ if uploaded_file is not None:
     if search_button:
         # Use a temporary file to save the uploaded image for processing
         try:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_file:
+            with tempfile.NamedTemporaryFile(delete = False, suffix = ".jpg") as tmp_file:
                 tmp_file.write(uploaded_file.getvalue())
                 tmp_file_path = tmp_file.name
 
@@ -41,7 +41,7 @@ if uploaded_file is not None:
             col1, col2, col3 = st.columns(3)
 
             # Find the two closest matches
-            matches = find_closest_match(tmp_file_path, num_results=2)
+            matches = find_closest_match(tmp_file_path, num_results = 2)
 
             with col1:
                 st.markdown("<h3 style='text-align: center;'>Your Uploaded Image</h3>", unsafe_allow_html = True)
@@ -54,19 +54,19 @@ if uploaded_file is not None:
                 if len(matches) > 0:
                     first_match_path, first_similarity = matches[0]
                     with col2:
-                        st.markdown("<h3 style='text-align: center;'>🥇 Top Match</h3>", unsafe_allow_html=True)
+                        st.markdown("<h3 style='text-align: center;'>Top Match</h3>", unsafe_allow_html = True)
                         first_match_image = Image.open(first_match_path)
-                        st.image(first_match_image, caption=os.path.basename(first_match_path), use_container_width=True)
-                        st.markdown(f"<p style='text-align: center; font-weight: bold;'>Similarity Score: {first_similarity:.4f}</p>", unsafe_allow_html=True)
+                        st.image(first_match_image, caption = os.path.basename(first_match_path), use_container_width = True)
+                        st.markdown(f"<p style='text-align: center; font-weight: bold;'>Similarity Score: {first_similarity:.4f}</p>", unsafe_allow_html = True)
                 
                 # Display the second match in the third column
                 if len(matches) > 1:
                     second_match_path, second_similarity = matches[1]
                     with col3:
-                        st.markdown("<h3 style='text-align: center;'>🥈 Second Match</h3>", unsafe_allow_html=True)
+                        st.markdown("<h3 style='text-align: center;'>Second Match</h3>", unsafe_allow_html = True)
                         second_match_image = Image.open(second_match_path)
-                        st.image(second_match_image, caption=os.path.basename(second_match_path), use_container_width=True)
-                        st.markdown(f"<p style='text-align: center; font-weight: bold;'>Similarity Score: {second_similarity:.4f}</p>", unsafe_allow_html=True)
+                        st.image(second_match_image, caption = os.path.basename(second_match_path), use_container_width = True)
+                        st.markdown(f"<p style='text-align: center; font-weight: bold;'>Similarity Score: {second_similarity:.4f}</p>", unsafe_allow_html = True)
                 else:
                     st.warning("Only one valid match was found.")
             else:

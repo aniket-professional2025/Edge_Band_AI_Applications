@@ -51,7 +51,7 @@ def get_feature_vector(image_path):
 
 def create_feature_database(database_folder):
     # Define the path for the JSON cache file
-    cache_file = os.path.join(database_folder, 'db_feature_vector_51.json')
+    cache_file = os.path.join(database_folder, 'db_feature_vector.json')
 
     # Check if the cache file already exists
     if os.path.exists(cache_file):
@@ -86,7 +86,7 @@ def search_database(query_feature_vector, database, num_results = 2):
 # The main Execution block
 def find_closest_match(query_image_path, num_results = 2):
     # Define the path to your existing database folder
-    database_folder = r"C:\Users\Webbies\Jupyter_Notebooks\Rehou_Image_Search\Database"
+    database_folder = r"C:\Users\Webbies\Jupyter_Notebooks\Rehau\ImageMatchingTexture\Database"
     
     # Check if the query image exists
     if not os.path.exists(query_image_path):
@@ -118,16 +118,3 @@ def find_closest_match(query_image_path, num_results = 2):
     else:
         print("------------ The Query Vector is None -------------------")
         return None
-    
-
-
-    #         # The search_database function returns a list of tuples, so we take the first element
-    #         closest_match_path, similarity = results[0]
-    #         print(f"Match Found: {os.path.basename(closest_match_path)} with a similarity of {similarity:.4f}")
-    #         return closest_match_path, similarity
-    #     else:
-    #         print("No matches found.")
-    #         return None, None
-    # else:
-    #     print("------------------------ The query vector is None-------------------------")
-    #     return None, None
