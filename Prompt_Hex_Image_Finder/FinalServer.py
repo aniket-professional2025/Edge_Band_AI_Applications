@@ -107,6 +107,67 @@ def format_laminates(laminates: List[dict]) -> List[Dict[str, str]]:
         for lam in laminates
     ]
 
+# Function to Convert a hexcode into RGB format
+def hex_to_rgb(hexcode):
+    hexcode = hexcode.lstrip("#")
+    return tuple(int(hexcode[i:i + 2], 16) for i in (0, 2, 4))
+
+# Function for Measureing distance between two rgb colors
+def color_distance(rgb1, rgb2):
+    return sum((a - b) ** 2 for a, b in zip(rgb1, rgb2)) ** 0.5
+
+# Function to find the laminates in sorted manner
+def find_all_laminates_sorted(input_hexcode, laminate_data):
+    """Find all laminates sorted by color distance for the given hexcode."""
+    input_rgb = hex_to_rgb(input_hexcode)
+    ranked = []
+    seen_names = set()
+
+    for texture in laminate_data:
+        tex_hex_list = texture.get("hexcode", [])
+        if not isinstance(tex_hex_list, list) or not tex_hex_list:
+            continue
+
+        try:
+            distances = [color_distance(input_rgb, hex_to_rgb(h)) for h in tex_hex_list if h.startswith("#")]
+            if not distances:
+                continue
+            min_distance = min(distances)
+        except Exception:
+            continue
+
+        name = texture.get("name", "")
+        if name in seen_names:
+            continue
+
+        ranked.append({
+            "name": name,
+            "sku": texture.get("sku", ""),
+            "link": f"https://dummynavigator.centuryply.com/product-details/{texture.get('id')}",
+            "distance": min_distance
+        })
+        seen_names.add(name)
+
+    ranked.sort(key=lambda x: x["distance"])
+    return ranked
+
+# Function to process the next batch so that the wait is minimized
+def get_next_batch(hexcode, laminate_data, batch_size=4):
+    """Get the next batch of laminates for the given hexcode."""
+    if "shown_laminates" not in st.session_state:
+        st.session_state["shown_laminates"] = {}
+
+    if hexcode not in st.session_state["shown_laminates"]:
+        # Initialize for this color
+        sorted_laminates = find_all_laminates_sorted(hexcode, laminate_data)
+        st.session_state["shown_laminates"][hexcode] = {"index": 0, "sorted": sorted_laminates}
+
+    data = st.session_state["shown_laminates"][hexcode]
+    start = data["index"]
+    end = start + batch_size
+    data["index"] = end
+    return data["sorted"][start:end]
+
 # Defining the MCP tools
 @mcp.tool()
 def find_laminates(prompt: str) -> List[dict]:

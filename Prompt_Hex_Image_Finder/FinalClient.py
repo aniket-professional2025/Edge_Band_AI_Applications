@@ -3,90 +3,19 @@
 # It uses the Openai API key along with the GPT-4o model
 
 # Importing Required Packages
-import asyncio
 import json
 import os
-import time
 from dotenv import load_dotenv
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
-from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, AIMessage
 import streamlit as st
+from FinalServer import *
 
 # Load environment variables
 load_dotenv()
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
-
-# Function to Convert a hexcode into RGB format
-def hex_to_rgb(hexcode):
-    hexcode = hexcode.lstrip("#")
-    return tuple(int(hexcode[i:i + 2], 16) for i in (0, 2, 4))
-
-# Function for Measureing distance between two rgb colors
-def color_distance(rgb1, rgb2):
-    return sum((a - b) ** 2 for a, b in zip(rgb1, rgb2)) ** 0.5
-
-# Function to find the laminates in sorted manner
-def find_all_laminates_sorted(input_hexcode, laminate_data):
-    """Find all laminates sorted by color distance for the given hexcode."""
-    input_rgb = hex_to_rgb(input_hexcode)
-    ranked = []
-    seen_names = set()
-
-    for texture in laminate_data:
-        tex_hex_list = texture.get("hexcode", [])
-        if not isinstance(tex_hex_list, list) or not tex_hex_list:
-            continue
-
-        try:
-            distances = [color_distance(input_rgb, hex_to_rgb(h)) for h in tex_hex_list if h.startswith("#")]
-            if not distances:
-                continue
-            min_distance = min(distances)
-        except Exception:
-            continue
-
-        name = texture.get("name", "")
-        if name in seen_names:
-            continue
-
-        ranked.append({
-            "name": name,
-            "sku": texture.get("sku", ""),
-            "link": f"https://dummynavigator.centuryply.com/product-details/{texture.get('id')}",
-            "distance": min_distance
-        })
-        seen_names.add(name)
-
-    ranked.sort(key=lambda x: x["distance"])
-    return ranked
-
-# Function to process the next batch so that the wait is minimized
-def get_next_batch(hexcode, laminate_data, batch_size=4):
-    """Get the next batch of laminates for the given hexcode."""
-    if "shown_laminates" not in st.session_state:
-        st.session_state["shown_laminates"] = {}
-
-    if hexcode not in st.session_state["shown_laminates"]:
-        # Initialize for this color
-        sorted_laminates = find_all_laminates_sorted(hexcode, laminate_data)
-        st.session_state["shown_laminates"][hexcode] = {"index": 0, "sorted": sorted_laminates}
-
-    data = st.session_state["shown_laminates"][hexcode]
-    start = data["index"]
-    end = start + batch_size
-    data["index"] = end
-    return data["sorted"][start:end]
-
-# Memory Initialization in Streamlit
-if "chat_history" not in st.session_state:
-    st.session_state["chat_history"] = []
-if "last_hexcode" not in st.session_state:
-    st.session_state["last_hexcode"] = None
-if "shown_laminates" not in st.session_state:
-    st.session_state["shown_laminates"] = {}
 
 # Defining a Async function to create the Agentic Behavior
 async def modified_laminate_agent(user_prompt: str):
